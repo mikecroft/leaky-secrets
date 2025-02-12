@@ -4,4 +4,6 @@ COPY .env .
 
 RUN echo "some commands here"
 
+RUN env
+
 RUN rm .env
