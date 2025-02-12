@@ -15,18 +15,14 @@ spec:
     git:
       uri: https://github.com/mikecroft/leaky-secrets
     type: Git
+    contextDir: skip-layers
   strategy:
     dockerStrategy:
+      imageOptimizationPolicy: SkipLayers
       from:
         kind: ImageStreamTag
         name: ubi-minimal:9.5
-      dockerfilePath:	skip-layers/skip-layers.Dockerfile
-      buildArgs:
-        - name: PRIVATE
-          valueFrom:
-            secretKeyRef:
-              key: PRIVATE
-              name: skip-layers-buildarg
+      dockerfilePath:	skip-layers.Dockerfile        
     type: Docker
   successfulBuildsHistoryLimit: 5
   triggers:
