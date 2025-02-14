@@ -23,11 +23,11 @@ spec:
         kind: ImageStreamTag
         name: ubi-minimal:9.5
       env:
-        - name: PRIVATE
+        - name: TOKEN
           valueFrom:
             secretKeyRef:
               name: skip-layers-env
-              key: PRIVATE
+              key: TOKEN
       dockerfilePath:	skip-layers.Dockerfile        
     type: Docker
   successfulBuildsHistoryLimit: 5
