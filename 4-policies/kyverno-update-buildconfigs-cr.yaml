@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    rbac.kyverno.io/aggregate-to-background-controller: "true"
+  name: kyverno:update-buildconfigs
+rules:
+- apiGroups:
+  - build.openshift.io
+  resources:
+  - buildconfigs
+  verbs:
+  - create
+  - update
