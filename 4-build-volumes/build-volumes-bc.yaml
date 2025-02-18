@@ -1,0 +1,63 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    build: build-volumes
+  name: build-volumes
+spec:
+  failedBuildsHistoryLimit: 5
+  output:
+    to:
+      kind: ImageStreamTag
+      name: build-volumes:latest
+  runPolicy: Serial
+  source:
+    git:
+      uri: https://github.com/mikecroft/leaky-secrets
+      ref: further-testing
+    type: Git
+    contextDir: 4-build-volumes
+  strategy:
+    dockerStrategy:
+      imageOptimizationPolicy: SkipLayers
+      from:
+        kind: ImageStreamTag
+        name: ubi-minimal:9.5
+      volumes:
+        - name: build-volumes-env
+          mounts:
+          - destinationPath: .env
+          source:
+            type: Secret
+            secret:
+              secretName: build-volumes-env
+        - name: build-volumes-aws-creds
+          mounts:
+          - destinationPath: .aws/credentials
+          source:
+            type: Secret
+            secret:
+              secretName: build-volumes-aws-creds
+      dockerfilePath:	build-volumes.Dockerfile        
+    type: Docker
+  successfulBuildsHistoryLimit: 5
+  triggers:
+  - type: ConfigChange
+  - type: ImageChange
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: build-volumes-env
+stringData:
+  TOKEN: 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 # notsecret
+type: Opaque
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: build-volumes-aws-creds
+stringData:
+  AWS_ACCESS_KEY_ID: AKIA0123456789ABCDEF # notsecret
+  AWS_SECRET_KEY: 12ASD34qwe56CXZ78tyH10Tna543VBokN85RHCas # notsecret
+type: Opaque

@@ -14,8 +14,9 @@ spec:
   source:
     git:
       uri: https://github.com/mikecroft/leaky-secrets
+      ref: further-testing
     type: Git
-    contextDir: skip-layers
+    contextDir: 3-skip-layers
   strategy:
     dockerStrategy:
       imageOptimizationPolicy: SkipLayers
