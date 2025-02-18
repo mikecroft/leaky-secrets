@@ -24,20 +24,18 @@ spec:
         kind: ImageStreamTag
         name: ubi-minimal:9.5
       volumes:
-        - name: build-volumes-env
+        - name: secrets
           mounts:
-          - destinationPath: /run/secrets/.env
+          - destinationPath: /tmp
           source:
             type: Secret
             secret:
-              secretName: build-volumes-env
-        - name: build-volumes-aws-creds
-          mounts:
-          - destinationPath: /run/secrets/.aws/credentials
-          source:
-            type: Secret
-            secret:
-              secretName: build-volumes-aws-creds
+              secretName: build-volumes-secret
+              items:
+                - key: .aws-credentials
+                  path: .aws/credentials
+                - key: .env
+                  path: .env
       dockerfilePath:	build-volumes.Dockerfile        
     type: Docker
   successfulBuildsHistoryLimit: 5
@@ -48,18 +46,12 @@ spec:
 kind: Secret
 apiVersion: v1
 metadata:
-  name: build-volumes-env
+  name: build-volumes-secret
 stringData:
-  TOKEN: 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 # notsecret
-type: Opaque
----
-kind: Secret
-apiVersion: v1
-metadata:
-  name: build-volumes-aws-creds
-stringData:
-  AWS_ACCESS_KEY_ID: AKIA0123456789ABCDEF # notsecret
-  AWS_SECRET_KEY: 12ASD34qwe56CXZ78tyH10Tna543VBokN85RHCas # notsecret
+  .env: TOKEN=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 # notsecret
+  .aws-credentials: |-
+    AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF # notsecret
+    AWS_SECRET_KEY=12ASD34qwe56CXZ78tyH10Tna543VBokN85RHCas # notsecret
 type: Opaque
 ---
 apiVersion: image.openshift.io/v1

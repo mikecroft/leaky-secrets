@@ -2,8 +2,9 @@ FROM registry.redhat.io/ubi9/ubi-minimal:9.5
 
 RUN microdnf install -y python
 
-RUN ls -lah /run/secrets/.env && \
-    ls -lah /run/secrets/.aws/credentials
+RUN ls -lah /tmp && \
+    cat /tmp/.env && \
+    cat /tmp/.aws/credentials
 
 ENTRYPOINT [ "python" ]
 
