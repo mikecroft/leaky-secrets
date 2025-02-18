@@ -1,0 +1,36 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: warn-leaky-buildconfigs
+  annotations:
+    policies.kyverno.io/title: Warn About Docker Strategy BuildConfigs Which Do Not Set SkipLayers imageOptimizationPolicy 
+    policies.kyverno.io/category: OpenShift
+    policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.13.0
+    policies.kyverno.io/minversion: 1.13.0
+    kyverno.io/kubernetes-version: "1.30"
+    policies.kyverno.io/subject: BuildConfig
+    policies.kyverno.io/description: >-
+      BuildConfigs which use the Docker strategy and use sensitive data might leak the data even if removed during the build 
+spec:
+  background: true
+  rules:
+  - name: check-buildConfig-imageOptimizationPolicy
+    match:
+      any:
+      - resources:
+          kinds:
+          - build.openshift.io/v1/BuildConfig
+    preconditions:
+      all:
+      - key: "{{ request.object.spec.strategy.type || '' }}"
+        operator: Equals
+        value: Docker
+    validate:
+      failureAction: Audit
+      cel:
+        expressions:
+          - expression: >-
+              has(object.spec.strategy.dockerStrategy.imageOptimizationPolicy) && 
+                object.spec.strategy.dockerStrategy.imageOptimizationPolicy.contains('SkipLayers')
+            message: "Docker Build Strategy should set imageOptimizationPolicy to SkipLayers."

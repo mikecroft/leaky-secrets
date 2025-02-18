@@ -1,0 +1,42 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-skiplayers-buildconfigs
+  annotations:
+    policies.kyverno.io/title: Identify Docker Strategy BuildConfigs And Set SkipLayers imageOptimizationPolicy 
+    policies.kyverno.io/category: OpenShift
+    policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.13.0
+    policies.kyverno.io/minversion: 1.13.0
+    kyverno.io/kubernetes-version: "1.30"
+    policies.kyverno.io/subject: BuildConfig
+    policies.kyverno.io/description: >-
+      BuildConfigs which use the Docker strategy and use sensitive data might leak the data even if removed during the build. 
+      This policy adds the imageOptimizationPolicy SkipLayers, which will avoid commiting new layers in between each image
+      step, so sensitive data which is used then deleted is no longer present in the layers of the resulting image.
+spec:
+  background: true
+  rules:
+  - name: check-buildConfig-imageOptimizationPolicy
+    match:
+      any:
+      - resources:
+          kinds:
+          - build.openshift.io/v1/BuildConfig
+    preconditions:
+      all:
+      - key: "{{ request.object.spec.strategy.type || '' }}"
+        operator: Equals
+        value: Docker
+    mutate:
+      mutateExistingOnPolicyUpdate: true
+      targets:
+        - apiVersion: build.openshift.io/v1
+          kind: BuildConfig
+          name: "{{ request.object.metadata.name }}"
+          namespace: "{{ request.object.metadata.namespace }}"
+      patchStrategicMerge:
+        spec:
+          strategy:
+            dockerStrategy:
+              imageOptimizationPolicy: SkipLayers
