@@ -61,3 +61,8 @@ stringData:
   AWS_ACCESS_KEY_ID: AKIA0123456789ABCDEF # notsecret
   AWS_SECRET_KEY: 12ASD34qwe56CXZ78tyH10Tna543VBokN85RHCas # notsecret
 type: Opaque
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: build-volumes
