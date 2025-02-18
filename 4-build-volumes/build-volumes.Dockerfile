@@ -4,6 +4,7 @@ RUN microdnf install -y python
 
 RUN ls -lah /tmp && \
     cat /tmp/.env && \
+    echo "\n" && \
     cat /tmp/.aws/credentials
 
 ENTRYPOINT [ "python" ]

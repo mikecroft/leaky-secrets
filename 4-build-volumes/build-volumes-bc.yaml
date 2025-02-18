@@ -14,7 +14,6 @@ spec:
   source:
     git:
       uri: https://github.com/mikecroft/leaky-secrets
-      ref: further-testing
     type: Git
     contextDir: 4-build-volumes
   strategy:
