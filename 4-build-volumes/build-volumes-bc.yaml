@@ -26,14 +26,14 @@ spec:
       volumes:
         - name: build-volumes-env
           mounts:
-          - destinationPath: .env
+          - destinationPath: /run/secrets/.env
           source:
             type: Secret
             secret:
               secretName: build-volumes-env
         - name: build-volumes-aws-creds
           mounts:
-          - destinationPath: .aws/credentials
+          - destinationPath: /run/secrets/.aws/credentials
           source:
             type: Secret
             secret:
